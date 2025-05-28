@@ -1,1 +1,91 @@
-<h1>ERROR: index.html no encontrado</h1>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ANONSHIELD</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    body { margin:0; padding:0; background:black; color:#00ffc8; font-family:'Orbitron',sans-serif; display:flex; flex-direction:column; min-height:100vh; }
+    header, footer { background:#101010; text-align:center; padding:1rem; border:1px solid #00ffc8; }
+    .content { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:2rem; }
+    .card { background:#181818; border:1px solid #00ffc8; padding:1rem; border-radius:10px; box-shadow:0 0 10px #00ffc8; animation:fadeIn 1s ease-in; }
+    .box { background:#101010; padding:0.8rem; margin:0.5rem 0; border:1px dashed #00ffc8; word-break:break-all; }
+    button { background:#00ffc8; color:black; border:none; padding:0.5rem 1rem; margin:0.3rem; cursor:pointer; border-radius:5px; font-weight:bold; }
+    ul { list-style:none; padding-left:0; }
+    li { margin:0.3rem 0; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  </style>
+</head>
+<body>
+  <header>ANONSHIELD - Anonymous Mail & Phone</header>
+  <div class="content">
+    <div class="card">
+      <h2>📧 Correo Temporal</h2>
+      <div class="box" id="emailBox">cargando@anonshield.email</div>
+      <button onclick="generateEmail()">🔄 Nuevo Correo</button>
+      <button onclick="copyText('emailBox')">📋 Copiar</button>
+      <h4>Bandeja de entrada</h4>
+      <ul id="inboxList"></ul>
+    </div>
+    <div class="card">
+      <h2>📱 Número Temporal</h2>
+      <div class="box" id="phoneBox">+1 (cargando...)</div>
+      <button onclick="generatePhone()">🔄 Nuevo Número</button>
+      <button onclick="copyText('phoneBox')">📋 Copiar</button>
+      <h4>SMS Recibidos</h4>
+      <ul id="smsList"></ul>
+    </div>
+  </div>
+  <footer>&copy; 2025 ANONSHIELD</footer>
+  <audio id="notifSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_a5f8e23fc4.mp3"></audio>
+  <script>
+    function copyText(id) {
+      const text = document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text);
+      alert("Copiado: " + text);
+    }
+
+    function playSound() {
+      const s = document.getElementById("notifSound");
+      s.currentTime = 0;
+      s.play();
+    }
+
+    function generateEmail() {
+      const domain = "anonshield.email";
+      const name = Math.random().toString(36).substring(2, 10);
+      const address = `${name}@${domain}`;
+      document.getElementById("emailBox").innerText = address;
+    }
+
+    function generatePhone() {
+      const number = "+1" + Math.floor(Math.random() * 9000000000 + 1000000000);
+      document.getElementById("phoneBox").innerText = number;
+    }
+
+    function simulateEmail() {
+      const inbox = document.getElementById("inboxList");
+      const msg = `${new Date().toLocaleTimeString()} - Verifica tu cuenta`;
+      const li = document.createElement("li");
+      li.textContent = msg;
+      inbox.prepend(li);
+      playSound();
+    }
+
+    function simulateSMS() {
+      const sms = document.getElementById("smsList");
+      const msg = `${new Date().toLocaleTimeString()} - Tu código es 12345`;
+      const li = document.createElement("li");
+      li.textContent = msg;
+      sms.prepend(li);
+      playSound();
+    }
+
+    generateEmail(); generatePhone();
+    setInterval(simulateEmail, 15000);
+    setInterval(simulateSMS, 20000);
+  </script>
+</body>
+</html>
