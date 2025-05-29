@@ -1,91 +1,73 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ANONSHIELD</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   <style>
-    body { margin:0; padding:0; background:black; color:#00ffc8; font-family:'Orbitron',sans-serif; display:flex; flex-direction:column; min-height:100vh; }
-    header, footer { background:#101010; text-align:center; padding:1rem; border:1px solid #00ffc8; }
-    .content { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:2rem; }
-    .card { background:#181818; border:1px solid #00ffc8; padding:1rem; border-radius:10px; box-shadow:0 0 10px #00ffc8; animation:fadeIn 1s ease-in; }
-    .box { background:#101010; padding:0.8rem; margin:0.5rem 0; border:1px dashed #00ffc8; word-break:break-all; }
-    button { background:#00ffc8; color:black; border:none; padding:0.5rem 1rem; margin:0.3rem; cursor:pointer; border-radius:5px; font-weight:bold; }
-    ul { list-style:none; padding-left:0; }
-    li { margin:0.3rem 0; }
-    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    body { margin: 0; padding: 0; background: #1b1b1b; color: #fff; font-family: 'Orbitron', sans-serif; }
+    header { background: #111; padding: 1rem; text-align: center; }
+    header h1 { color: #00ffc8; margin: 0; font-size: 1.5rem; }
+    .container { max-width: 900px; margin: auto; padding: 2rem; text-align: center; }
+    .email-box, .phone-box { background: #2a2a2a; border-radius: 10px; padding: 1rem; display: flex; justify-content: space-between; align-items: center; margin: 1rem 0; box-shadow: 0 0 10px rgba(0,255,200,0.3); }
+    .email-box input, .phone-box input { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; }
+    .email-box button, .phone-box button, .btns button { margin-left: 0.5rem; background: #00ffc8; color: #000; border: none; border-radius: 5px; padding: 0.5rem 1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+    .btns { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+    .section { background: #2a2a2a; border-radius: 10px; padding: 1rem; margin-top: 2rem; box-shadow: 0 0 5px rgba(0,255,200,0.2); }
+    .section h3 { margin-top: 0; }
+    iframe { width: 100%; height: 500px; border: 1px solid #00ffc8; border-radius: 10px; margin-top: 1rem; background: #000; }
+    footer { text-align: center; background: #111; padding: 1rem; font-size: 0.9rem; color: #ccc; }
   </style>
 </head>
 <body>
-  <header>ANONSHIELD - Anonymous Mail & Phone</header>
-  <div class="content">
-    <div class="card">
-      <h2>📧 Correo Temporal</h2>
-      <div class="box" id="emailBox">cargando@anonshield.email</div>
-      <button onclick="generateEmail()">🔄 Nuevo Correo</button>
-      <button onclick="copyText('emailBox')">📋 Copiar</button>
-      <h4>Bandeja de entrada</h4>
+  <header><h1>ANONSHIELD</h1></header>
+  <div class="container">
+    <h2>Tu dirección de correo electrónico temporal</h2>
+    <div class="email-box">
+      <input id="emailBox" value="cargando@anonshield.email" readonly />
+      <button onclick="copyText('emailBox')">📋</button>
+    </div>
+    <div class="btns">
+      <button onclick="generateEmail()">🔄 Actualizar</button>
+      <button onclick="generateEmail()">✏️ Cambiar</button>
+      <button onclick="clearInbox()">❌ Borrar</button>
+    </div>
+    <div class="section">
+      <h3>📥 Bandeja de entrada</h3>
       <ul id="inboxList"></ul>
     </div>
-    <div class="card">
-      <h2>📱 Número Temporal</h2>
-      <div class="box" id="phoneBox">+1 (cargando...)</div>
-      <button onclick="generatePhone()">🔄 Nuevo Número</button>
-      <button onclick="copyText('phoneBox')">📋 Copiar</button>
-      <h4>SMS Recibidos</h4>
-      <ul id="smsList"></ul>
+    <h2>Selecciona un número temporal</h2>
+    <div class="btns">
+      <button onclick="loadTempNumber('https://tempnumber.io/en/number/US1')">🇺🇸 EE.UU. - US1</button>
+      <button onclick="loadTempNumber('https://tempnumber.io/en/number/UK2')">🇬🇧 Reino Unido - UK2</button>
+      <button onclick="loadTempNumber('https://tempnumber.io/en/number/CA3')">🇨🇦 Canadá - CA3</button>
+      <button onclick="loadTempNumber('https://tempnumber.io/en/number/FR4')">🇫🇷 Francia - FR4</button>
+    </div>
+    <div class="section">
+      <h3>📲 SMS Reales Recibidos</h3>
+      <iframe id="smsFrame" src=""></iframe>
     </div>
   </div>
   <footer>&copy; 2025 ANONSHIELD</footer>
-  <audio id="notifSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_a5f8e23fc4.mp3"></audio>
   <script>
     function copyText(id) {
-      const text = document.getElementById(id).innerText;
-      navigator.clipboard.writeText(text);
-      alert("Copiado: " + text);
+      const el = document.getElementById(id);
+      navigator.clipboard.writeText(el.value);
+      alert("Copiado: " + el.value);
     }
-
-    function playSound() {
-      const s = document.getElementById("notifSound");
-      s.currentTime = 0;
-      s.play();
-    }
-
     function generateEmail() {
       const domain = "anonshield.email";
       const name = Math.random().toString(36).substring(2, 10);
-      const address = `${name}@${domain}`;
-      document.getElementById("emailBox").innerText = address;
+      document.getElementById("emailBox").value = `${name}@${domain}`;
     }
-
-    function generatePhone() {
-      const number = "+1" + Math.floor(Math.random() * 9000000000 + 1000000000);
-      document.getElementById("phoneBox").innerText = number;
+    function clearInbox() {
+      document.getElementById("inboxList").innerHTML = "";
     }
-
-    function simulateEmail() {
-      const inbox = document.getElementById("inboxList");
-      const msg = `${new Date().toLocaleTimeString()} - Verifica tu cuenta`;
-      const li = document.createElement("li");
-      li.textContent = msg;
-      inbox.prepend(li);
-      playSound();
+    function loadTempNumber(url) {
+      document.getElementById("smsFrame").src = url;
     }
-
-    function simulateSMS() {
-      const sms = document.getElementById("smsList");
-      const msg = `${new Date().toLocaleTimeString()} - Tu código es 12345`;
-      const li = document.createElement("li");
-      li.textContent = msg;
-      sms.prepend(li);
-      playSound();
-    }
-
-    generateEmail(); generatePhone();
-    setInterval(simulateEmail, 15000);
-    setInterval(simulateSMS, 20000);
+    generateEmail();
   </script>
 </body>
 </html>
